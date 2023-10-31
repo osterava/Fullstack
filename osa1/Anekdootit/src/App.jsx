@@ -12,23 +12,30 @@ const App = () => {
     'The only way to go fast, is to go well.'
   ]
    const [selected, setSelected] = useState(0)
-
+   const [points, setPoints] = useState([0, 0, 0, 0, 0, 0, 0, 0 ])
    const RandomAnecdote = () => { setSelected(Math.floor(Math.random()*anecdotes.length))  }
-   
+  
+  const handleVote = () => {
+    const copy = [...points]
+    copy[selected] += 1
+    setPoints(copy)
+  }
   return (
     <div>
-      <Display text={anecdotes[selected]}/>
+      <Display text={anecdotes[selected]} points={points[selected]}/>
+      <button onClick={handleVote}>Vote</button>
       <button onClick={RandomAnecdote}> Next Anecdote </button>
     </div>
   )
 
 }
 
-
-
 const Display = (props) => {
 return (
-<div>{props.text}</div>
+<div>
+  <div>{props.text}</div>
+  <div>has {props.points} votes</div>
+</div>
  )
 }
 
