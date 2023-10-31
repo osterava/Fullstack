@@ -22,21 +22,39 @@ const App = () => {
   }
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <Display text={anecdotes[selected]} points={points[selected]}/>
       <button onClick={handleVote}>Vote</button>
       <button onClick={RandomAnecdote}> Next Anecdote </button>
+      <h1>Anecdote with most votes</h1>
+      <MostVoted anecdotes = {anecdotes} points = {points} />
     </div>
   )
 
 }
 
+const MostVoted = (props) => {
+  const maxIndex = function(array){
+    return array.indexOf(Math.max.apply(null,array));
+  }
+  const MostVotesFor = maxIndex(props.points)
+  
+  return (
+    <div>
+      {props.anecdotes[MostVotesFor]} 
+                  <br/>
+      has {props.points[MostVotesFor]} votes
+    </div>
+  )
+}
+
 const Display = (props) => {
-return (
-<div>
-  <div>{props.text}</div>
-  <div>has {props.points} votes</div>
-</div>
- )
+ 
+  return (
+    <div>{props.text}
+          <br/>
+    has {props.points} votes</div>
+  )
 }
 
 export default App
