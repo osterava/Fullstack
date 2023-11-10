@@ -59,6 +59,22 @@ const App = () => {
     return exists
   }
 
+  const deleteContact = (id, name) => {
+
+    const confirmDeletion = window.confirm(`Delete ${name}?`);
+
+    if (confirmDeletion) {
+      personsService
+        .remove(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id));
+        })
+        .catch(error => {
+          console.error("Error deleting contact:", error);
+        });
+    }
+  };
+
   return (
     <div>
 
@@ -77,7 +93,7 @@ const App = () => {
 
       <h2>Numbers</h2>
 
-      <Persons contacts = {contactsToShow} />
+      <Persons contacts = {contactsToShow} deleteCont = {deleteContact} />
 
     </div>
   )
@@ -90,10 +106,10 @@ const Person = (props) => {
    ) 
 }
 
-const Filter = (props) => {
+const Filter = ({showAll, handle}) => {
   return (
     <form>
-        filter shown with <input value={props.showAll} onChange = {props.handle}/>
+        filter shown with <input value={showAll} onChange = {handle}/>
       </form>
 
     )
@@ -117,13 +133,18 @@ const PersonForm = (props) => {
     )
 }
 
-const Persons = (props) => {
+const Persons = ({ contacts, deleteCont }) => {
   return (
     <div>
-      {props.contacts.map((person) => (
-        <Person key={person.name} name={person.name} number={person.number} />
-      ))}
-    </div>
+        {contacts.map((person) => (
+          <div key={person.id}>
+            <Person name={person.name} number={person.number} />
+            <button onClick={() => deleteCont(person.id, person.name)}>
+              Delete
+            </button>
+          </div>
+        ))}
+      </div>
   )
 }
 
