@@ -29,6 +29,32 @@ const App = () => {
     setShowAll(event.target.value)
   }
 
+  const updateNumber = (existingPerson, newNumber) => {
+    console.log("Existing Person:", existingPerson);
+  
+    const confirmUpdate = window.confirm(
+      `${existingPerson.name} is already added to the phonebook with number ${existingPerson.number}. Do you want to update the number?`
+    );
+  
+    if (confirmUpdate) {
+      const updatedPerson = { ...existingPerson, number: newNumber }
+      console.log("Updated Person:", updatedPerson);
+  
+      personsService
+        .update(existingPerson.id, updatedPerson)
+        .then(response => {
+          console.log("Update Response:", response);
+        
+          setPersons(persons =>
+            persons.map(person => person.id !== existingPerson.id ? person : response))
+          setNewName('')
+          setNewNumber('')
+        })
+        .catch(error => {
+          console.error("Error updating number:", error);
+        })
+    }
+  }
   const addName = (event) => {
     event.preventDefault()
     const nameObject = {
@@ -36,7 +62,10 @@ const App = () => {
       number:newNumber
     }
     
-    if (checkIfNameExists() == true) alert(`${newName} is already added to phonebook`)
+    const existingPerson = persons.find(person => person.name === newName);
+
+    if (existingPerson) {
+      updateNumber(existingPerson, newNumber);}
     else{
     personsService
     .create(nameObject)
@@ -52,13 +81,6 @@ const App = () => {
   ? persons.filter(person => person.name.toUpperCase().indexOf(showAll.toUpperCase()) !== -1)
   : persons
 
-  const checkIfNameExists = () => {
-    let exists = false
-
-    persons.forEach(individual=> { if (individual.name === newName ) exists = true}) 
-    return exists
-  }
-
   const deleteContact = (id, name) => {
 
     const confirmDeletion = window.confirm(`Delete ${name}?`);
@@ -71,9 +93,9 @@ const App = () => {
         })
         .catch(error => {
           console.error("Error deleting contact:", error);
-        });
+        })
     }
-  };
+  }
 
   return (
     <div>
@@ -136,15 +158,15 @@ const PersonForm = (props) => {
 const Persons = ({ contacts, deleteCont }) => {
   return (
     <div>
-        {contacts.map((person) => (
-          <div key={person.id}>
-            <Person name={person.name} number={person.number} />
-            <button onClick={() => deleteCont(person.id, person.name)}>
-              Delete
-            </button>
-          </div>
-        ))}
-      </div>
+      {contacts.map(person => (
+        <div key={person.id}>
+          <Person name={person.name} number={person.number} />
+          <button onClick={() => deleteCont(person.id, person.name)}>
+            Delete
+          </button>
+        </div>
+      ))}
+    </div>
   )
 }
 
