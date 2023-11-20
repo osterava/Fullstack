@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import personsService from './services/persons'
+import './index.css'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [showAll, setShowAll] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
 
 
   useEffect(() => {
@@ -49,9 +52,20 @@ const App = () => {
             persons.map(person => person.id !== existingPerson.id ? person : response))
           setNewName('')
           setNewNumber('')
+          setSuccessMessage(
+            `${existingPerson.name}'s phone number updated successfully`
+          )
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
         })
         .catch(error => {
-          console.error("Error updating number:", error);
+          setErrorMessage(
+            `Information of ${existingPerson.name} has already been removed from the phonebook `
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
         })
     }
   }
@@ -73,6 +87,12 @@ const App = () => {
       setPersons(persons.concat(newNameObject))
       setNewName('')
       setNewNumber('')
+      setSuccessMessage(
+        `Added ${newNameObject.name}`
+      )
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
     })
     }
   }
@@ -90,9 +110,20 @@ const App = () => {
         .remove(id)
         .then(() => {
           setPersons(persons.filter(person => person.id !== id));
+          setErrorMessage(
+            `${name} was remowed from the phonebook`
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
         })
         .catch(error => {
-          console.error("Error deleting contact:", error);
+          setErrorMessage(
+            `Person '${name}' was already removed from server`
+          )
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
         })
     }
   }
@@ -101,11 +132,11 @@ const App = () => {
     <div>
 
       <h2>Phonebook</h2>
-
+      
       <Filter showAll={showAll} handle={handleFilterResults}/>
-
       <h2>Add a new Contact</h2>
-
+      {errorMessage && <div className="error">{errorMessage}</div>}
+      {successMessage && <div className="success">{successMessage}</div>}
       <PersonForm 
       addName = {addName} 
       newName={newName} 
@@ -169,6 +200,5 @@ const Persons = ({ contacts, deleteCont }) => {
     </div>
   )
 }
-
 
 export default App
