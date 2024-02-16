@@ -9,7 +9,7 @@ const totalLikes = (blogs) => {
     return blogs.map(blog=>blog.likes).reduce(reducer,0)
 }
 
-const favoritBlog = (blogs) => {
+const favoritBlog = (blogs) => { 
     const reducer = (max, curr) => {
         return max.likes > curr.likes ? max : curr;
       }
@@ -21,3 +21,5 @@ const favoritBlog = (blogs) => {
     totalLikes,
     favoritBlog
   }
+
+    /* 4.6 + 4.7 tekemättä */

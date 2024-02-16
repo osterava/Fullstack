@@ -8,7 +8,7 @@ const middleware = require('./utils/middleware')
 const mongoose = require('mongoose')
 mongoose.set('strictQuery', false)
 
-logger.info('connecting to', config.MONGODB_URI)
+logger.info('Connecting to MongoDB Database')
 
 mongoose.connect(config.MONGODB_URI)
   .then(() => {
