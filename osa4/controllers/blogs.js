@@ -1,7 +1,6 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
-const jwt = require('jsonwebtoken')
+const { userExtractor } = require('../utils/middleware')
 
 
 blogRouter.get('/', async (request, response) => {
@@ -24,21 +23,9 @@ blogRouter.get('/:id', async (request, response, next) => {
     }
 })
 
-const getTokenFrom = request => {
-  const authorization = request.get('authorization')
-  if (authorization && authorization.startsWith('Bearer ')) {
-    return authorization.replace('Bearer ', '')
-  }
-  return null
-}
-
-blogRouter.post('/', async (request, response, next) => {
+blogRouter.post('/', userExtractor, async (request, response) => {
   const body = request.body
-  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' })
-  }
-  const user = await User.findById(decodedToken.id)
+  const user = await request.user
 
   const blog = new Blog({
     title: body.title,
@@ -49,38 +36,48 @@ blogRouter.post('/', async (request, response, next) => {
   })
 
   const savedBlog = await blog.save()
+  await savedBlog.populate('user', { username: 1, name: 1 })
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
+  response.status(201).json(savedBlog)
 
-  response.json(savedBlog.toJSON())
 })
 
-blogRouter.delete("/:id", async (request, response, next) => {
-  try {
-    await Blog.findByIdAndRemove(request.params.id);
-    response.status(204).end();
-  } catch (exception) {
-    next(exception);
+blogRouter.delete('/:id', userExtractor, async (request, response) => {
+  const user = await request.user
+  const blog = await Blog.findById(request.params.id)
+
+  if (blog.user.toString() === user._id.toString()) {
+    await Blog.findByIdAndRemove(request.params.id)
+    response.status(204).end()
+  } else {
+    response.status(401).json({
+      error: 'no permission to delete'
+    })
   }
-});
 
-blogRouter.put("/:id", async (request, response, next) => {
-  const body = request.body;
+})
 
-  const blog = {
+blogRouter.put('/:id', userExtractor, async (request, response) => {
+  const body = request.body
+  const user = await request.user
+  const blog = await Blog.findById(request.params.id)
+
+  const blogUpdate = {
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes
-  };
-  try {
-    const updated = await Blog.findByIdAndUpdate(request.params.id, blog, {
-      new: true
-    });
-    response.json(updated.toJSON());
-  } catch (exception) {
-    next(exception);
   }
-});
+
+  if (blog.user.toString() === user._id.toString()) {
+    const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blogUpdate, { new: true })
+    response.json(updatedBlog)
+  } else {
+    response.status(401).json({
+      error: 'no permission to modify'
+    })
+  }
+})
 
 module.exports = blogRouter

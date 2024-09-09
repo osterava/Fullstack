@@ -1,8 +1,11 @@
-POST http://localhost:3001/api/blogs Content-Type: application/json
+POST http://localhost:3001/api/blogs 
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im9zdGVyYXZhMjMiLCJpZCI6IjY2ZGVlY2Q4OGYzMDM5M2U1MGI3ZGM1OCIsImlhdCI6MTcyNTg4NzAyNywiZXhwIjoxNzI1ODkwNjI3fQ.-IawjpBF2qU7WqOrszhFourh_OXA2QieUc4JMRU3el8
 
 {
-"title":"Testi1",
-"author":"OT12",
-"url": "www.testi.com",
-"likes": "5"
+"title":"1224124",
+"author":"OT1224124",
+"url": "www.testi.com24124",
+"likes": "52",
+"userId":"66deecd88f30393e50b7dc58"
 }
