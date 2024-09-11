@@ -12,26 +12,32 @@ const requestLogger = (request, response, next) => {
 
 const tokenExtractor = (request, response, next) => {
   const authorization = request.get('authorization')
-
-  request.token = null
-
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    request.token = authorization.replace('bearer ', '')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '')
   }
-
-  next()
+  return null
 }
 
-const userExtractor = (request, response, next) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET)
+const userExtractor = async (request, response, next) => {
+  const token = tokenExtractor(request)
 
-  if (!request.token || !decodedToken.id) {
-    return response.status(401).json({
-      error: 'token missing or invalid'
-    })
+  if (!token) {
+    return response.status(401).json({ error: 'token missing' })
   }
 
-  request.user = User.findById(decodedToken.id)
+  const decodedToken = jwt.verify(token, process.env.SECRET)
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'token invalid' })
+  }
+
+  const user = await User.findById(decodedToken.id)
+
+  if (!user) {
+    return response.status(401).json({ error: 'user not found' })
+  }
+
+  request.user = user
+
   next()
 }
 

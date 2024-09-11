@@ -27,11 +27,15 @@ blogRouter.post('/', userExtractor, async (request, response) => {
   const body = request.body
   const user = await request.user
 
+  const likes = body.likes === undefined
+    ? 0
+    : body.likes
+
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
-    likes: body.likes,
+    likes: likes,
     user:user._id
   })
 
