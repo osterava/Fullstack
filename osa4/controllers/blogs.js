@@ -52,7 +52,7 @@ blogRouter.delete('/:id', userExtractor, async (request, response) => {
   const blog = await Blog.findById(request.params.id)
 
   if (blog.user.toString() === user._id.toString()) {
-    await Blog.findByIdAndRemove(request.params.id)
+    await Blog.findByIdAndDelete(request.params.id)
     response.status(204).end()
   } else {
     response.status(401).json({
@@ -64,24 +64,16 @@ blogRouter.delete('/:id', userExtractor, async (request, response) => {
 
 blogRouter.put('/:id', userExtractor, async (request, response) => {
   const body = request.body
-  const user = await request.user
-  const blog = await Blog.findById(request.params.id)
 
-  const blogUpdate = {
+  const blog = {
     title: body.title,
     author: body.author,
     url: body.url,
     likes: body.likes
   }
 
-  if (blog.user.toString() === user._id.toString()) {
-    const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blogUpdate, { new: true })
-    response.json(updatedBlog)
-  } else {
-    response.status(401).json({
-      error: 'no permission to modify'
-    })
-  }
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+  response.json(updatedBlog)
 })
 
 module.exports = blogRouter

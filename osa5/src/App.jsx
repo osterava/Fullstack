@@ -18,11 +18,10 @@ const App = () => {
       .login(user)
       .then(loginUser => {
         setUser(loginUser)
-        blogService.setToken(loginUser.token)
-        console.log(user.username)
+        blogService.setToken(loginUser.token);
         window.localStorage.setItem(
           'loggedBloglistUser', JSON.stringify(loginUser)
-        )
+        );
         showSuccessMessage(`${loginUser.name} logged in`)
       })
       .catch(error => {
@@ -30,20 +29,20 @@ const App = () => {
       })
   }
 
-
   useEffect(() => {
     if (user) {
-      blogService.getAll().then(blogs =>
-        setBlogs(blogs)
-      )
+      blogService.getAll().then(blogs => {
+        const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
+        setBlogs(sortedBlogs);
+      })
     }
   }, [user])
-  
+
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      setUser(user);
       blogService.setToken(user.token)
     }
   }, [])
@@ -59,50 +58,49 @@ const App = () => {
     setErrorMessage(message)
     setTimeout(() => {
       setErrorMessage(null)
-    }, 3000)
+    }, 3000);
   }
 
   const handleLogOut = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
     window.localStorage.clear()
-      blogService.setToken(null)
-      setUser(null)
-  
+    blogService.setToken(null)
+    setUser(null)
   }
 
-const UserLoginForm = () => {
-  return (
+  const UserLoginForm = () => (
     <div>
-      <LoginForm userLogin = {userLogin}/>
-    </div>
-)
-}
-const NewBlogsRef = useRef()
-
-const addBlog = (addNewBlog) => {
-  NewBlogsRef.current.toggleVisibility()
-  blogService
-  .create(addNewBlog)
-  .then(returnedBlog => {
-    setBlogs(blogs.concat(returnedBlog))
-    showSuccessMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
-  })
-  .catch(error => {
-    showErrorMessage('sorry, a new blog post have not been added')
-})
-}
-
-const loggedinUser = () => {
-  return (
-    <div>
-      <p>{user.name} logged in</p>
-      <p> <button onClick={handleLogOut}>logout</button> </p>
+      <LoginForm userLogin={userLogin} />
     </div>
   )
-}
 
-const newBlogForm = () => {
-  return (
+  const NewBlogsRef = useRef()
+
+  const addBlog = (addNewBlog) => {
+    NewBlogsRef.current.toggleVisibility()
+    blogService
+      .create(addNewBlog)
+      .then(returnedBlog => {
+        setBlogs(blogs.concat(returnedBlog).sort((a, b) => b.likes - a.likes));
+        showSuccessMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
+      })
+      .catch(error => {
+        showErrorMessage('sorry, a new blog post has not been added')
+      })
+  }
+
+  const deleteBlog = (id) => {
+    setBlogs(blogs.filter(blog => blog.id !== id))
+  }
+
+  const loggedinUser = () => (
+    <div>
+      <p>{user.name} logged in</p>
+      <p><button onClick={handleLogOut}>logout</button></p>
+    </div>
+  )
+
+  const newBlogForm = () => (
     <div>
       {loggedinUser()}
       <Togglable buttonLabel='Add a new blog' ref={NewBlogsRef}>
@@ -111,23 +109,23 @@ const newBlogForm = () => {
 
       <h3>All blogs</h3>
       {blogs.map(blog => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} user={user} onDelete={deleteBlog} />
       ))}
+    </div>
+  )
+
+  return (
+    <div>
+      <h2>Blogs</h2>
+      <ErrorNotification message={errorMessage} />
+      <SuccessNotification message={successMessage} />
+      {user === null ? (
+        <UserLoginForm />
+      ) : (
+        newBlogForm()
+      )}
     </div>
   )
 }
 
-return (
-  <div>
-    <h2>Blogs</h2>
-    <ErrorNotification message={errorMessage} />
-    <SuccessNotification message={successMessage} />
-    {user === null ? (
-      <UserLoginForm />
-    ) : (
-      newBlogForm() 
-    )}
-  </div>
-)
-}
-export default App
+export default App;
