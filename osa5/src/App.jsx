@@ -96,9 +96,7 @@ const loggedinUser = () => {
   return (
     <div>
       <p>{user.name} logged in</p>
-      <p>
-        <button onClick={handleLogOut}>logout</button>
-      </p>
+      <p> <button onClick={handleLogOut}>logout</button> </p>
     </div>
   )
 }

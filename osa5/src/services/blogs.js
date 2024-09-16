@@ -25,13 +25,4 @@ const update = (id, newObject) => {
   return request.then(response => response.data)
 }
 
-const updateLike = async (id, blog) => {
-  const config = {
-    headers: { Authorization: token }
-  }
-  const request = axios.put(`${baseUrl}/like/${id}`, blog, config)
-  const response = await request
-  return response.data
-}
-
-export default { getAll, create, update, updateLike, setToken }
+export default { getAll, create, update, setToken }
