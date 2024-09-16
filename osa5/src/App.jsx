@@ -18,10 +18,10 @@ const App = () => {
       .login(user)
       .then(loginUser => {
         setUser(loginUser)
-        blogService.setToken(loginUser.token);
+        blogService.setToken(loginUser.token)
         window.localStorage.setItem(
           'loggedBloglistUser', JSON.stringify(loginUser)
-        );
+        )
         showSuccessMessage(`${loginUser.name} logged in`)
       })
       .catch(error => {
@@ -33,7 +33,7 @@ const App = () => {
     if (user) {
       blogService.getAll().then(blogs => {
         const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes)
-        setBlogs(sortedBlogs);
+        setBlogs(sortedBlogs)
       })
     }
   }, [user])
@@ -42,7 +42,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user);
+      setUser(user)
       blogService.setToken(user.token)
     }
   }, [])
@@ -58,11 +58,11 @@ const App = () => {
     setErrorMessage(message)
     setTimeout(() => {
       setErrorMessage(null)
-    }, 3000);
+    }, 3000)
   }
 
   const handleLogOut = async (event) => {
-    event.preventDefault();
+    event.preventDefault()
     window.localStorage.clear()
     blogService.setToken(null)
     setUser(null)
@@ -81,7 +81,7 @@ const App = () => {
     blogService
       .create(addNewBlog)
       .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog).sort((a, b) => b.likes - a.likes));
+        setBlogs(blogs.concat(returnedBlog).sort((a, b) => b.likes - a.likes))
         showSuccessMessage(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
       })
       .catch(error => {
@@ -128,4 +128,4 @@ const App = () => {
   )
 }
 
-export default App;
+export default App
