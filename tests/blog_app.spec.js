@@ -30,6 +30,7 @@ describe('Blog app', () => {
     test('succeeds with correct credentials', async ({ page }) => {
         await loginWith(page, 'ollu1','pass')
         await expect(page.locator('p').filter({ hasText: 'Olli Ter logged in' })).toBeVisible();
+
 })
 
     test('fails with wrong credentials', async ({ page }) => {
@@ -39,5 +40,23 @@ describe('Blog app', () => {
     })
   })
 
+  describe('When logged in', () => {
+    beforeEach(async ({ page }) => {
+      loginWith(page,'ollu1','pass')
+    })
+  
+    test('a new blog can be created', async ({ page }) => {
+        await page.waitForSelector('text=Add a new blog', { timeout: 60000 })
+        await page.getByText('Add a new blog').click()
+        await page.getByLabel('title').fill('Test Blog Title')
+        await page.getByLabel('author').fill('Test Author')
+        await page.getByLabel('url').fill('http://testblog.com')
+        await page.getByRole('button', { name: 'create a new blog' }).click()
+        await page.waitForTimeout(500);
+        
+        const blogTitleLocator = page.getByText('Test Blog Title view')
+        await expect(blogTitleLocator).toBeVisible()
+    })
+  })
 })
   
