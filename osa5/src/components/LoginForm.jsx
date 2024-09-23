@@ -41,6 +41,7 @@ export const LoginForm = ({ userLogin }) => {
         <p>
         username:
           <input
+            data-testid='username'
             type='text'
             value={username}
             onChange={handleUsernameChange} />
@@ -48,6 +49,7 @@ export const LoginForm = ({ userLogin }) => {
         <p>
         password:
           <input
+            data-testid='password'
             type='password'
             value={password}
             onChange={handlePasswordChange}
