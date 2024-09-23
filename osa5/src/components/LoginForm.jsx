@@ -27,12 +27,12 @@ export const LoginForm = ({ userLogin }) => {
   }
 
 
-LoginForm.propTypes = {
-  handleUsernameChange: PropTypes.func.isRequired,
-  handlePasswordChange: PropTypes.func.isRequired,
-  username: PropTypes.string.isRequired,
-  password: PropTypes.string.isRequired
-}
+  LoginForm.propTypes = {
+    handleUsernameChange: PropTypes.func.isRequired,
+    handlePasswordChange: PropTypes.func.isRequired,
+    username: PropTypes.string.isRequired,
+    password: PropTypes.string.isRequired
+  }
 
   return (
     <div>

@@ -74,6 +74,20 @@ const App = () => {
     </div>
   )
 
+  const addLike = async (blogId) => {
+    try {
+      const blogToUpdate = await blogService.getBlogById(blogId)
+      blogToUpdate.likes += 1
+      const returnedBlog = await blogService.updateLike(blogId, blogToUpdate)
+      setBlogs(blogs.map(blog =>
+        blog.id === blogId ? { ...blog, likes: returnedBlog.likes } : blog
+      ))
+      showSuccessMessage('You liked a blog')
+    } catch (error) {
+      console.log('Something went wrong:', error)
+    }
+  }
+
   const NewBlogsRef = useRef()
 
   const addBlog = (addNewBlog) => {
@@ -89,8 +103,17 @@ const App = () => {
       })
   }
 
-  const deleteBlog = (id) => {
-    setBlogs(blogs.filter(blog => blog.id !== id))
+  const deleteBlog = async (blogId) => {
+    if (window.confirm('Are you sure you want to delete this blog?')) {
+      try {
+        await blogService.deleteBlog(blogId)
+        setBlogs(blogs.filter(blog => blog.id !== blogId))
+        showSuccessMessage('Blog deleted')
+      } catch (error) {
+        console.log('Something went wrong, blog could not be deleted', error)
+        showErrorMessage('Blog could not be deleted')
+      }
+    }
   }
 
   const loggedinUser = () => (
@@ -109,7 +132,7 @@ const App = () => {
 
       <h3>All blogs</h3>
       {blogs.map(blog => (
-        <Blog key={blog.id} blog={blog} user={user} onDelete={deleteBlog} />
+        <Blog key={blog.id} blog={blog} user={user} onDelete={deleteBlog} onLike = {addLike} />
       ))}
     </div>
   )
