@@ -39,32 +39,37 @@ export const NewBlog = ({ addBlog }) => {
     <div>
       <form onSubmit={addNewBlog}>
         <p>
-        title:
-          <input
-            type='text'
-            value={title}
-            onChange={handleTitleChange}
-          />
+          <label>
+          Title:
+            <input
+              type='text'
+              value={title}
+              onChange={handleTitleChange}
+            />
+          </label>
         </p>
         <p>
-        author:
-          <input
-            type='text'
-            value={author}
-            onChange={handleAuthorChange}
-          />
+          <label>
+          Author:
+            <input
+              type='text'
+              value={author}
+              onChange={handleAuthorChange}
+            />
+          </label>
         </p>
         <p>
-        url:
-          <input
-            type='text'
-            value={url}
-            onChange={handleUrlChange}
-          />
+          <label>
+          URL:
+            <input
+              type='text'
+              value={url}
+              onChange={handleUrlChange}
+            />
+          </label>
         </p>
-        <button type="submit">create a new blog</button>
+        <button type="submit">Create a new blog</button>
       </form>
-
     </div>
   )
 }
